@@ -23,9 +23,34 @@ let users = [
     },
 ];
 
+
+// GET METHODS //
+// GET Sort by birthday
+function getDateFromString(strDate) {
+  let [dd,mm,yyyy] = strDate.split('-')
+  return new Date(yyyy+"/"+mm+"/"+dd);
+}
+  
+// GET Sort by birthday
+router.get("/sort",(req,res)=>{
+  let sorted_users=users.sort(function(a, b) {
+    let d1 = getDateFromString(a.DOB);
+    let d2 = getDateFromString(b.DOB);
+    return d1-d2;
+  });
+  res.send(sorted_users);
+});
+
 // GET request: Retrieve all users
 router.get("/",(req,res)=>{
   res.send(JSON.stringify({users},null,4));
+});
+
+// GET request: Retrieve all users with a particular last name
+router.get("/lastname/:lastName",(req,res)=>{
+  const lastName = req.params.lastName;
+  let filtered_lastname = users.filter((user) => user.lastName === lastName);
+  res.send(filtered_lastname);
 });
 
 // GET by specific ID request: Retrieve a single user with email ID
