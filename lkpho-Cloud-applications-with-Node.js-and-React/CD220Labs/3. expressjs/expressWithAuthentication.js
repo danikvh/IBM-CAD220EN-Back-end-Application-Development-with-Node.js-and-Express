@@ -9,7 +9,7 @@ const doesExist = (username)=>{
   let userswithsamename = users.filter((user)=>{
     return user.username === username
   });
-  if(userswithsamename.length > 0){
+  if (userswithsamename.length > 0) {
     return true;
   } else {
     return false;
@@ -34,23 +34,27 @@ app.use(express.json());
 
 app.use(session({secret:"fingerpint"}))
 
+// Utilizar la variable del token en la solicitud GET
+// curl "http://localhost:5000/auth/get_message" -Headers @{ "Authorization" = $token } -Method GET
 app.use("/auth", function auth(req,res,next){
-   if(req.session.authorization) { //get the authorization object stored in the session
-       token = req.session.authorization['accessToken']; //retrieve the token from authorization object
-       jwt.verify(token, "access",(err,user)=>{ //Use JWT to verify token
-           if(!err){
-               req.user = user;
-               next();
-           }
-           else{
-               return res.status(403).json({message: "User not authenticated"})
-           }
-        });
-    } else {
-        return res.status(403).json({message: "User not logged in"})
-    }
+  if(req.session.authorization) { //get the authorization object stored in the session
+    token = req.session.authorization['accessToken']; //retrieve the token from authorization object
+    jwt.verify(token, "access",(err,user)=>{ //Use JWT to verify token
+      if(!err){
+        req.user = user;
+        next();
+      }
+      else{
+        return res.status(403).json({message: "User not authenticated"})
+      }
+    });
+  } else {
+    return res.status(403).json({message: "User not logged in"})
+  }
 });
 
+// Si lo hago con curl no funciona, las llamadas a curl son independientes entre si, no se guarda la sesion:
+// curl "http://localhost:5000/login?username=user12&password=pwd12" -Method Post
 app.post("/login", (req,res) => {
   const username = req.query.username;
   const password = req.query.password;
@@ -66,8 +70,8 @@ app.post("/login", (req,res) => {
 
     req.session.authorization = {
       accessToken,username
-  }
-  return res.status(200).send("User successfully logged in");
+    }
+    return res.status(200).send("User successfully logged in");
   } else {
     return res.status(208).json({message: "Invalid Login. Check username and password"});
   }
