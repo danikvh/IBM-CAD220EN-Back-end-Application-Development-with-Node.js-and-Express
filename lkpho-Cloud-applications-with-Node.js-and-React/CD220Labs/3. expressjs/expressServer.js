@@ -11,6 +11,7 @@ app.get("/loginDetails",(req,res)=>{
     res.send(JSON.stringify(loginDetails));
 })
 
+/* curl "http://localhost:3333/login/Jason" -Method Post */
 app.post("/login/:name",(req,res)=>{
     loginDetails.push({"name":req.params.name,"login_time":new Date()});
     res.send(req.params.name + ", You are logged in!")
